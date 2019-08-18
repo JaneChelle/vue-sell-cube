@@ -1,6 +1,6 @@
 <!--  -->
 <template>
-  <div class="header">
+  <div class="header" @click="showDetail">
       <div class="content-wrapper">
         <div class="avatar">
           <img :src="seller.avatar" alt="" width="64" height="64">
@@ -28,11 +28,11 @@
       <div class="background">
         <img :src="seller.avatar" alt="" width="100%" height="100%">
       </div>
-      </div>
   </div>
 </template>
-<script type="text-ecmascript-6">
-import supportIco from 'components/support-ico/support-ico'
+
+<script>
+import SupportIco from 'components/support-ico/support-ico'
 export default {
   name: 'v-header',
   props: {
@@ -43,13 +43,23 @@ export default {
       }
     }
   },
+  methods: {
+    showDetail () {
+      this.HeaderDetailComp = this.HeaderDetailComp || this.$createHeaderDetail({
+        $props: {
+          seller: 'seller'
+        }
+      })
+      this.HeaderDetailComp.show()
+    }
+  },
   components: {
-    supportIco
+    SupportIco
   }
 }
 </script>
 
-<style lang='stylus' rel="stylesheet/stylus">
+<style lang='stylus' rel="stylesheet/stylus" scoped>
 @import "~common/stylus/mixin";
 // @import "~common/stylus/variable"
   .header

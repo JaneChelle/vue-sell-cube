@@ -29,6 +29,8 @@ export default {
     .support-ico
       display: inline-block
       background-repeat: no-repeat
+      vertical-align: top;
+      margin-right: 5px;
    .icon-1
      width: 12px
      height: 12px

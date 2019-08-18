@@ -1,7 +1,7 @@
 <!--  -->
 <template>
   <transition name="fade">
-      <div class="header-detail">
+      <div class="header-detail" v-show="visible">
        <div  class="detail">
         <div class="detail-wrapper clearfix">
           <div class="detail-main">
@@ -16,7 +16,7 @@
             </div>
             <ul v-if="seller.supports" class="supports">
               <li class="support-item" v-for="(item,index) in seller.supports" :key="item.id">
-                <support-ico :size=2 :type="seller.supports[index].type"></support-ico>
+                <support-ico :size="2" :type="seller.supports[index].type"></support-ico>
                 <span class="text">{{seller.supports[index].description}}</span>
               </li>
             </ul>
@@ -32,7 +32,7 @@
               </div>
           </div>
         </div>
-        <div class="detail-close">
+        <div class="detail-close" @click="hide">
           <i class="icon-close"></i>
         </div>
       </div>
@@ -45,14 +45,25 @@ import star from 'components/star/star'
 import supportIco from 'components/support-ico/support-ico'
 export default {
   name: 'header-detail',
-  data () {
-    return {
+  props: {
       seller: {
         type: Object,
         default () {
           return {}
-      }
-      }
+       }
+    }
+  },
+  data () {
+    return {
+      visible: false
+    }
+  },
+  methods: {
+    show () {
+      this.visible = true
+    },
+    hide () {
+      this.visible = false
     }
   },
   components: {
@@ -88,10 +99,11 @@ export default {
        background :rgba(7,17,27,.8)
        transition: all .5s
        backdrop-filter: blur(10px)
-       &.fade-transition
-         opacity: 1
-         background: rgba(7,17,27,0.8)
-       &.fade-enter, &.fade-leave
+       opacity: 1
+       background: rgba(7,17,27,0.8)
+       &.fade-enter-active, &.fade-leave-active
+         transition: all 0.5s
+       &.fade-enter, &.fade-leave-active
          opacity: 0
          background: rgba(7,17,27,0)
        .detail-wrapper
