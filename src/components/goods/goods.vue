@@ -44,7 +44,10 @@
       </cube-scroll-nav>
     </div>
     <div class="shop-cart-wrapper">
-        <shop-cart ref="shopCart" :delivery-price="seller.deliveryPrice" :min-price="seller.minPrice" :select-foods="selectFoods"></shop-cart>
+        <shop-cart ref="shopCart" :delivery-price="seller.deliveryPrice"
+         :min-price="seller.minPrice"
+        :select-foods="selectFoods">
+        </shop-cart>
     </div>
   </div>
 </template>

@@ -70,7 +70,8 @@ export default {
     },
     data () {
         return {
-            balls: createBalls()
+            balls: createBalls(),
+            listFold: this.fold
         }
     },
     computed: {
@@ -93,13 +94,13 @@ export default {
                 return `￥${this.minPrice}元起送`
             } else if (this.totalPrice < this.minPrice) {
                 let diff = this.minPrice - this.totalPrice
-                return `￥${diff}元起送`
+                return `还差￥${diff}元起送`
             } else {
                 return '去结算'
             }
         },
         payClass () {
-            if (this.totalPrice < this.minPrice) {
+            if (!this.totalCount || this.totalPrice < this.minPrice) {
                 return 'not-enough'
             } else {
                 return 'enough'
@@ -118,7 +119,6 @@ export default {
                     ball.show = true
                     ball.el = el
                     this.dropBalls.push(ball)
-                    console.log('drop')
                     return
                 }
             }
