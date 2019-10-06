@@ -34,7 +34,7 @@
                  <div class="price">
                     <span class="now">￥{{food.price}}</span><span class="old" v-show="food.oldPrice">￥{{food.oldPrice}}</span>
                  </div>
-                  <div class="cartcontrol-wrapper">
+                  <div class="cart-control-wrapper">
                     <cart-control :food="food" @add="onAdd"></cart-control>
                   </div>
               </div>
@@ -51,7 +51,6 @@
     </div>
   </div>
 </template>
-
 <script>
 import { getGoods } from 'api'
 import ShopCart from 'components/shop-cart/shop-cart'
@@ -60,6 +59,12 @@ import bubble from 'components/bubble/bubble'
 import SupportIco from 'components/support-ico/support-ico'
 export default {
   name: 'goods',
+  components: {
+      ShopCart,
+      CartControl,
+      bubble,
+      SupportIco
+  },
   props: {
     data: {
       type: Object,
@@ -71,6 +76,7 @@ export default {
   data () {
     return {
       goods: [],
+      selectedFood: {},
       scrollOptions: {
         click: false,
         directionLockThreshold: 0
@@ -81,33 +87,33 @@ export default {
     seller () {
       return this.data.seller
     },
-    selectFoods () {
-      let ret = []
-      this.goods.forEach((good) => {
-        good.foods.forEach((food) => {
-        if (food.count) {
-          ret.push(food)
-        }
-        })
-      })
-      return ret
-    },
-    barTxts () {
-      let ret = []
-      this.goods.forEach((good) => {
-        const { type, name, foods } = good
-        let count = 0
-        foods.forEach((food) => {
-          count += food.count || 0
-        })
-        ret.push({
-          type,
-          name,
-          count
-        })
-      })
-      return ret
-    }
+      selectFoods () {
+          let foods = []
+          this.goods.forEach((good) => {
+              good.foods.forEach((food) => {
+                  if (food.count) {
+                      foods.push(food)
+                  }
+              })
+          })
+          return foods
+      },
+      barTxts () {
+          let ret = []
+          this.goods.forEach((good) => {
+              const { type, name, foods } = good
+              let count = 0
+              foods.forEach((food) => {
+                  count += food.count || 0
+              })
+              ret.push({
+                  type,
+                  name,
+                  count
+              })
+          })
+          return ret
+      }
   },
   methods: {
     fetch () {
@@ -118,12 +124,6 @@ export default {
     onAdd (el) {
       this.$refs.shopCart.drop(el)
     }
-  },
-  components: {
-    ShopCart,
-    CartControl,
-    bubble,
-    SupportIco
   }
 }
 </script>
@@ -208,8 +208,15 @@ export default {
               text-decoration: line-through
               font-size:10px
               color: rgb(147,153,159)
-          .cartcontrol-wrapper
+          .cart-control-wrapper
             position: absolute
             right: 0
             bottom: 12px
+        .shop-cart-wrapper
+          position: absolute
+          left: 0
+          bottom: 0
+          z-index: 50
+          width: 100%
+          height: 48px
 </style>

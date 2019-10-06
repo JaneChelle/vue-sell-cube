@@ -16,7 +16,7 @@
               <div class="desc">另需配送费¥{{deliveryPrice}}元</div>
           </div>
           <div class="content-right">
-              <div class="pay" :class="payClass">
+              <div @click="pay" class="pay" :class="payClass">
                   {{payDesc}}
               </div>
           </div>
@@ -52,6 +52,9 @@ function createBalls () {
 }
 export default {
     name: 'shop-cart',
+    components: {
+        bubble
+    },
     props: {
         selectFoods: {
            type: Array,
@@ -66,6 +69,14 @@ export default {
         minPrice: {
             type: Number,
             default: 0
+        },
+        sticky: {
+          type: Boolean,
+          default: false
+        },
+        fold: {
+            type: Boolean,
+            default: true
         }
     },
     data () {
@@ -109,9 +120,21 @@ export default {
     },
     created () {
         this.dropBalls = []
-        this.listFold = true
     },
     methods: {
+        toggleList () {
+            if (this.listFold) {
+                if (!this.totalCount) {
+                    return
+                }
+                this.listFold = false
+                this._showShopCartList()
+                this._showShopCartSticky()
+            } else {
+                this.listFold = true
+                this._hideShopCartList()
+            }
+        },
         drop (el) {
             for (let i = 0; i < this.balls.length; i++) {
                 let ball = this.balls[i]
@@ -148,36 +171,66 @@ export default {
                 el.style.display = 'none'
             }
         },
-        toggleList () {
-            if (this.listFold) {
-                if (!this.totalCount) {
-                    return
-                }
-                this.listFold = false
-                this._showShopCartList()
-            } else {
-                this.listFold = true
-                this._hideShopCartList()
-            }
-        },
         _showShopCartList () {
-            this.ShopCartListComp = this.ShopCartListComp || this
-            .$createShopCartList({
+            this.shopCartListComp = this.shopCartListComp || this.$createShopCartList({
                 $props: {
                     selectFoods: 'selectFoods'
+                },
+                $events: {
+                    hide: () => {
+                        this.listFold = true
+                    },
+                    leave: () => {
+                        this._hideShopCartSticky()
+                    },
+                    add: (el) => {
+                        this.ShopCartStickyComp.drop(el)
+                    }
                 }
             })
             this.shopCartListComp.show()
         },
+        _showShopCartSticky () {
+            this.ShopCartStickyComp = this.ShopCartStickyComp || this.$createShopCartSticky({
+                $props: {
+                    selectFoods: 'selectFoods',
+                    deliveryPrice: 'deliveryPrice',
+                    minPrice: 'minPrice',
+                    fold: 'listFold',
+                    list: this.shopCartListComp
+                }
+            })
+            this.ShopCartStickyComp.show()
+        },
         _hideShopCartList () {
-            this.shopCartListComp.hide()
+            const comp = this.sticky ? this.$parent.list : this.shopCartListComp
+            comp.hide && comp.hide()
+        },
+        _hideShopCartSticky () {
+            this.ShopCartStickyComp.hide()
+        },
+        pay (e) {
+            if (this.totalPrice < this.minPrice) {
+                return
+            }
+            this.$createDialog({
+                title: '支付',
+                content: ` 您需要支付${this.totalPrice}元 `
+            }).show()
+            e.stopPropagation()
         }
     },
-    components: {
-        bubble
+    watch: {
+        fold (newVal) {
+            this.listFold = newVal
+        },
+        totalCount (newVal) {
+            if (!this.listFold && !newVal) {
+                this._hideShopCartList()
+            }
+        }
     }
 }
-
 </script>
 
 <style lang='stylus' rel='stylesheet/stylus' scoped>
