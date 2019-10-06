@@ -33,12 +33,13 @@
 </template>
 <script>
 import CartControl from 'components/cart-control/cart-control'
-
-const EVENT_HIDE = 'hide'
+import popupMixin from 'common/mixins/popup'
 const EVENT_LEAVE = 'leave'
 const EVENT_ADD = 'add'
+const EVENT_SHOW = 'show'
 export default {
     name: 'shop-cart-list',
+    mixins: [popupMixin],
      components: {
       CartControl
     },
@@ -50,22 +51,14 @@ export default {
             }
         }
     },
-   data () {
-    return {
-        visible: false
-    }
-  },
-  methods: {
-      show () {
-          this.visible = true
-          this.$nextTick(() => {
-              this.$refs.listContent.refresh()
-          })
-      },
-      hide () {
-          this.visible = false
-          this.$emit(EVENT_HIDE)
-      },
+    created () {
+        this.$on(EVENT_SHOW, ()=>{
+            this.$nextTick(() => {
+                this.$refs.listContent.refresh()
+            })
+        })
+    },
+    methods: {
       maskClick () {
           this.hide()
       },

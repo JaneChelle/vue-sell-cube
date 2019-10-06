@@ -117,9 +117,12 @@ export default {
   },
   methods: {
     fetch () {
-      getGoods().then((goods) => {
-        this.goods = goods
-      })
+        if (!this.fecthed){
+          this.fetch = true
+          getGoods().then((goods) => {
+            this.goods = goods
+          })
+        }
     },
     onAdd (el) {
       this.$refs.shopCart.drop(el)
