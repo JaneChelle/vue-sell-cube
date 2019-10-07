@@ -52,7 +52,7 @@ export default {
         }
     },
     created () {
-        this.$on(EVENT_SHOW, ()=>{
+        this.$on(EVENT_SHOW, () => {
             this.$nextTick(() => {
                 this.$refs.listContent.refresh()
             })

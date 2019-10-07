@@ -21,7 +21,10 @@
           :label="good.name"
           :title="good.name">
           <ul>
-            <li v-for="food in good.foods" :key="food.name" class="food-item">
+            <li  @click="selectFood(food)"
+                 v-for="food in good.foods"
+                :key="food.name"
+                class="food-item">
               <div class="icon">
                 <img :src="food.icon" width="57" height="57">
               </div>
@@ -63,7 +66,7 @@ export default {
       ShopCart,
       CartControl,
       bubble,
-      SupportIco
+      SupportIco,
   },
   props: {
     data: {
@@ -117,8 +120,8 @@ export default {
   },
   methods: {
     fetch () {
-        if (!this.fecthed){
-          this.fetch = true
+        if (!this.fetched) {
+          this.fetched = true
           getGoods().then((goods) => {
             this.goods = goods
           })
@@ -126,6 +129,18 @@ export default {
     },
     onAdd (el) {
       this.$refs.shopCart.drop(el)
+    },
+    selectFood (food) {
+        this.selectedFood = food
+        this._showFood()
+    },
+    _showFood () {
+        this.foodComp = this.foodComp || this.$createFood ({
+            $props: {
+                food: 'selectedFood'
+            }
+        })
+        this.foodComp.show()
     }
   }
 }
