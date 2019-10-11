@@ -1,16 +1,14 @@
 <template>
-<transition name="move">
+<transition name="move" @after-leave="afterLeave">
   <div class="food" v-show="visible">
-    <cube-scroll ref="scroll">
+    <cube-scroll ref="scroll" :data="computedRatings">
       <div class="food-content">
-
       <div class="image-header">
-        <img :src="food.image" alt="">
+        <img :src="food.image" >
         <div class="back" @click="hide">
           <i class="icon-arrow_lift"></i>
         </div>
       </div>
-
       <div class="content">
         <h1 class="title">{{food.name}}</h1>
         <div class="detail">
@@ -21,14 +19,13 @@
           <span class="now">￥{{food.price}}</span>
           <span class="old" v-show="food.oldPrice">￥{{food.oldPrice}}</span>
         </div>
-        <div class="cart-control-wrapper">
-          <cart-control :food="food"></cart-control>
+        <div class="cart-control-wrapper" v-show="food.count">
+          <cart-control :food="food" @add="addFood"></cart-control>
         </div>
         <transition name="fade">
-          <div class="buy" v-show="!food.count">加入购物车</div>
+          <div class="buy" v-show="!food.count" @click="addFirst">加入购物车</div>
         </transition>
       </div>
-
       <split v-show="food.info"></split>
       <div class="info" v-show="food.info">
         <h1 class="title">商品信息</h1>
@@ -38,28 +35,37 @@
 
       <div class="rating">
         <h1 class="title">商品评价</h1>
-<!--        <rating-select>-->
-
-<!--        </rating-select>-->
+          <rating-select
+          :onlyContent="onlyContent"
+          :selectType="selectType"
+          :ratings="ratings"
+          :desc="desc"
+          @select="onSelect"
+          @toggle="onToggle"
+          >
+          </rating-select>
         <div class="rating-wrapper">
-          <ul>
-            <li class="rating-item border-bottom-1px">
+          <ul v-show="computedRatings && computedRatings.length">
+            <li
+              v-for="(rating, index) in computedRatings"
+              :key="index"
+              class="rating-item border-bottom-1px">
               <div class="user">
                 <span class="name">
-<!--                  {{rating.username}}-->
+                  {{rating.username}}
                 </span>
-<!--                <img class="avatar" :src="rating.avatar" alt="">-->
+                <img class="avatar" :src="rating.avatar" width="12" height="12">
               </div>
               <div class="time">
-<!--                {{format(rating.rateTime)}}-->
+                {{format(rating.rateTime)}}
               </div>
               <p class="text">
-                <span></span>
-<!--                {{rating.avatar}}-->
+                <span :class="{'icon-thumb_up':rating.rateType===0,'icon-thumb_down':rating.rateType===1}"></span>
+                {{rating.text}}
               </p>
             </li>
           </ul>
-          <div class="no-rating">暂无评价</div>
+          <div class="no-rating" v-show="!computedRatings || !computedRatings.length">暂无评价</div>
         </div>
       </div>
     </div>
@@ -69,30 +75,32 @@
 </template>
 
 <script>
-    // import moment from 'moment'
+    import moment from 'moment'
     import CartControl from 'components/cart-control/cart-control'
-    // import RatingSelect from 'components/rating-select/rating-select'
+    import RatingSelect from 'components/rating-select/rating-select'
     import Split from 'components/split/split'
-    // import ratingMixin from 'common/mixins/rating'
+     import ratingMixin from 'common/mixins/rating'
     import popupMixin from 'common/mixins/popup'
     const EVENT_SHOW = 'show'
+    const EVENT_LEAVE = 'leave'
+    const EVENT_ADD = 'add'
     export default {
         name: 'food',
-        mixins: [popupMixin],
+        mixins: [popupMixin, ratingMixin],
         props: {
             food: {
                 type: Object
             }
         },
-        // data () {
-        //     return {
-        //         desc: {
-        //             all: '全部',
-        //             positive: '推荐',
-        //             negative: '吐槽'
-        //         }
-        //     }
-        // },
+        data () {
+            return {
+                desc: {
+                    all: '全部',
+                    positive: '推荐',
+                    negative: '吐槽'
+                }
+            }
+        },
         created () {
             this.$on(EVENT_SHOW, () => {
                 this.$nextTick(() => {
@@ -100,9 +108,29 @@
                 })
             })
         },
+        methods: {
+            afterLeave () {
+                this.$emit(EVENT_LEAVE)
+            },
+            addFirst (event) {
+                this.$set(this.food, 'count', 1)
+                this.$emit(EVENT_ADD, event.target)
+            },
+            addFood (target) {
+                this.$emit(EVENT_ADD, target)
+            },
+            format (time) {
+                return moment(time).format('YYYY-MM-DD hh:mm')
+            }
+        },
+        computed: {
+           ratings () {
+               return this.food.ratings
+           }
+        },
         components: {
             CartControl,
-            // RatingSelect,
+            RatingSelect,
             Split
         }
     }

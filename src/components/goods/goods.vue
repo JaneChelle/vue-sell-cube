@@ -66,7 +66,7 @@ export default {
       ShopCart,
       CartControl,
       bubble,
-      SupportIco,
+      SupportIco
   },
   props: {
     data: {
@@ -133,15 +133,38 @@ export default {
     selectFood (food) {
         this.selectedFood = food
         this._showFood()
+        this._showShopCartSticky()
     },
     _showFood () {
-        this.foodComp = this.foodComp || this.$createFood ({
+        this.foodComp = this.foodComp || this.$createFood({
             $props: {
                 food: 'selectedFood'
+            },
+            $events: {
+                leave: () => {
+                    this._hideShopCartSticky()
+                },
+                add: (el) => {
+                    this.shopCartStickyComp.drop(el)
+                }
             }
         })
         this.foodComp.show()
-    }
+    },
+      _showShopCartSticky () {
+        this.shopCartStickyComp = this.shopCartStickyComp || this.$createShopCartSticky({
+            $props: {
+                selectFoods: 'selectFoods',
+                deliveryPrice: this.seller.deliveryPrice,
+                minPrice: this.seller.minPrice,
+                fold: true
+            }
+        })
+          this.shopCartStickyComp.show()
+      },
+      _hideShopCartSticky () {
+          this.shopCartStickyComp.hide()
+      }
   }
 }
 </script>
