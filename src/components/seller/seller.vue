@@ -81,7 +81,7 @@
   </cube-scroll>
 </template>
 <script>
-    // import { saveToLocal, loadFromLocal } from 'common/js/storage'
+    import { saveToLocal, loadFromLocal } from 'common/js/storage'
     import Star from 'components/star/star'
     import Split from 'components/split/split'
     import SupportIco from 'components/support-ico/support-ico'
@@ -122,13 +122,13 @@ export default {
         Split,
         SupportIco
     },
-    // created() {
-    //     this.favorite = loadFromLocal(this.seller.id, 'favorite', false)
-    // },
+    created () {
+        this.favorite = loadFromLocal(this.seller.id, 'favorite', false)
+    },
     methods: {
         toggleFavorite () {
             this.favorite = !this.favorite
-            // saveToLocal(this.seller.id, 'favorite', this.favorite)
+            saveToLocal(this.seller.id, 'favorite', this.favorite)
         }
     }
 }
