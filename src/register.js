@@ -7,4 +7,4 @@ import Food from 'components/food/food'
 createAPI(Vue, HeaderDetail)
 createAPI(Vue, ShopCartList)
 createAPI(Vue, ShopCartSticky)
-createAPI(Vue,Food)
+createAPI(Vue, Food)
